@@ -1,0 +1,213 @@
+body{
+    margin: 0;
+    padding: 0;
+    /* background-color:#ff6d6d; */
+
+    font-family: arial
+}
+
+#first-list {
+	padding-left: 120px
+}
+
+#second-list {
+	padding-left: 120px
+}
+
+.box{
+    margin:0 0%;
+    height: 650px;
+    overflow: hidden;
+    background: #bea2e7;
+  	/* Old browsers */
+  	background: -moz-linear-gradient(top, #bea2e7 0%, #86b7e7 100%);
+  	/* FF3.6-15 */
+ 	 background: -webkit-linear-gradient(top, #bea2e7 0%, #86b7e7 100%);
+ 	 /* Chrome10-25,Safari5.1-6 */
+ 	 background: linear-gradient(to bottom, #bea2e7 0%, #86b7e7 100%);
+    padding: 10px 0 40px 80px
+}
+
+.box ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: relative;   
+    transition: all 0.5s linear;
+    top:0
+}
+
+.box ul:last-of-type{top:80px}
+
+/*점선 라인*/
+/* .box ul:before{	
+    content: "";
+    display: block;
+    width: 0;
+    height: 100%;
+    border:1px dashed #fff;
+    position: absolute;
+    left: 30px;
+} */
+
+.box ul:before{	
+    content: "";
+    display: block;
+    width: 0;
+    height: 100%;
+    border:1px dashed #fff;
+    position: absolute;
+    left: 150px;
+}
+
+/*글자, 박스*/
+.box ul li{
+    margin: 20px 60px 40px;
+    position: relative;
+    padding: 10px 20px;
+    background:rgba(255, 255, 255, 0.3);
+    color:#fff;
+    border-radius: 10px;
+    line-height: 20px;
+    width: 40%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.08)
+}
+
+/* 라인 컬러 수정*/
+.box ul li > span{
+    content: "";
+    display: block;
+    width: 0;
+    height: 100%;
+    border:1px solid #fff;
+    position: absolute;
+    top:0;
+    left:-30px
+}
+/* 동그라미 */
+.box ul li > span:before, .box ul li > span:after {
+    content: "";
+    display: block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background:#ff6d6d;
+    border:2px solid #fff;
+    position: absolute;
+    left:-7.5px
+}
+
+/* .box ul li > span:before,.box ul li > span:after{
+    content: "";
+    display: block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background:#ff6d6d;
+    border:2px solid #fff;
+    position: absolute;
+    left:-7.5px
+} */
+
+.box ul li > span:before{top:-10px}
+.box ul li > span:after{top:95%}
+
+.box .title{
+	font-size: medium;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 5px
+}
+
+.box .info {
+	text-transform: capitalize;
+	line-height: 1.5;
+	font-size: small;
+	}
+
+/* .box .info:first-letter{text-transform: capitalize;line-height: 1.7} */
+
+.box .name{
+    margin-top: 10px;
+    text-transform: capitalize;
+    font-style: italic;
+    text-align: right;
+    margin-right: 20px
+}
+
+/*시간*/
+.box .time span{
+    position: absolute;
+    left: -100px;
+    color:#fff;
+    font-size:80%;
+    font-weight: bold;
+}
+.box .time span:first-child{top:-16px}
+.box .time span:last-child{top:94%}
+
+
+.arrow{
+    position: absolute;
+    top: 105%;
+    left: 43%;
+    cursor: pointer;
+  	height:20px;
+  	width:20px
+}
+
+.arrow:hover{
+    -webkit-animation: arrow 1s linear infinite;
+       -moz-animation: arrow 1s linear infinite;
+         -o-animation: arrow 1s linear infinite;
+            animation: arrow 1s linear infinite;
+}
+
+.box ul:last-of-type .arrow{
+    position: absolute;
+    top: 105%;
+    left: 43%;
+    transform: rotateX(180deg);
+    cursor: pointer;
+}
+
+svg{
+    width: 20px;
+    height: 20px
+}
+
+@keyframes arrow{
+    0%,100%{
+        top:105%
+    }
+    50%{
+        top:106%
+    }
+}
+
+@-webkit-keyframes arrow{
+    0%,100%{
+        top:105%
+    }
+    50%{
+        top:106%
+    }
+}
+
+@-moz-keyframes arrow{
+    0%,100%{
+        top:105%
+    }
+    50%{
+        top:106%
+    }
+}
+
+@-o-keyframes arrow{
+    0%,100%{
+        top:105%
+    }
+    50%{
+        top:106%
+    }
+}
