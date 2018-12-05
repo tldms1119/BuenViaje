@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.common.dao.GalleryBDao">
+
+	<resultMap id="galleryImage" type="GalleryImageB">
+		<id column="image_id" property="imageId" />				
+		<result column="file_name" property="fileName" />
+		<result column="server_file_name" property="serverFileName" />
+		<result column="source" property="source" />		
+		<result column="image_reg_date" property="regDate" />
+		<result column="image_update_date" property="updateDate" />
+	</resultMap>
+
+	<resultMap id="gallery" type="GalleryB">
+		<id column="gallery_id" property="galleryId" />
+		<result column="title" property="title" />
+		<result column="password" property="password" />
+		<result column="country" property="country" />
+		<result column="owner" property="owner" />
+		<result column="description" property="description" />
+		<result column="read_cnt" property="readCnt" />
+		<result column="reg_date" property="regDate" />
+		<result column="update_date" property="updateDate" />
+		<collection property="list" resultMap="galleryImage" />
+	</resultMap>
+
+
+	<select id="count" resultType="int"><![CDATA[ 
+		select count(*) from galleryB 
+	]]></select>
+
+	<select id="getList" resultType="GalleryB"><![CDATA[ 
+		select * from galleryB  
+	]]></select>
+	
+	<select id="findById" parameterType="Long" 
+		resultMap="gallery"><![CDATA[
+		select * from gallery_detailB
+		where gallery_id = #{galleryId}
+	]]></select>
+
+	<insert id="insert" parameterType="GalleryB"
+		useGeneratedKeys="true" keyColumn="gallery_id" keyProperty="galleryId"><![CDATA[
+		insert into galleryB (
+			gallery_id, title, password, country, owner, description
+		)
+		values(
+			galleryB_seq.nextval,
+			#{title}, #{password}, #{country}, #{owner}, #{description}
+		)	
+	]]></insert>
+
+	<insert id="addImage" parameterType="GalleryImageB"><![CDATA[
+		insert into gallery_imageB (
+			image_id, file_name, server_file_name,
+			source, gallery_id)
+		values(
+			gallery_imageB_seq.nextval,
+			#{fileName}, #{serverFileName},
+			#{source}, #{galleryId})	
+	]]></insert>
+
+	<select id="getImages" parameterType="long"
+		resultType="GalleryImageB"><![CDATA[
+			select * from gallery_imageB
+			where gallery_id = #{galleryId}
+			
+	]]></select>
+	
+	<select id="getImage" parameterType="long" resultType="GalleryImageB"><![CDATA[
+	
+		select * from gallery_imageB
+		where image_id = #{imageId}
+	
+	]]></select>
+
+	<update id="update" parameterType="GalleryB"><![CDATA[
+		update galleryB set
+			title=#{title},
+			country=#{country},
+			description=#{description},
+			update_date = sysdate
+		where gallery_id=#{galleryId}
+	]]></update>
+	
+	<update id="increaseReadCnt" parameterType="long"><![CDATA[
+		update galleryB set
+			read_cnt = read_cnt + 1
+		where gallery_id = #{galleryId}
+	]]></update>
+
+	<delete id="delete" parameterType="Long"><![CDATA[
+		delete from galleryB
+		where gallery_id = #{galleryId}
+	]]></delete>
+
+	<select id="getPage" parameterType="map" resultMap="gallery"><![CDATA[ 				
+		select 
+		    g.gallery_id, g.title, g.password, g.country, g.owner,
+		    g.description, g.read_cnt, g.reg_date, g.update_date,
+		    i.image_id, i.file_name, i.server_file_name, i.source,
+		    i.reg_date image_reg_date, i.update_date image_update_date
+		from (
+			select * from (
+				select row_number() over(order by gallery_id) as seq,
+				gallery_id, title, password, country, owner, description, read_cnt, reg_date, update_date
+				from galleryb
+			)
+			where seq between #{start} and #{end}
+		) g, gallery_imageB i
+		where g.gallery_id = i.gallery_id(+)		
+		order by ${orderBy} desc
+		
+	]]></select>
+	
+	<select id="search" parameterType="Search" resultMap="gallery"><![CDATA[ 				
+		select 
+		    g.gallery_id, g.title, g.password, g.country, g.owner,
+		    g.description, g.read_cnt, g.reg_date, g.update_date,
+		    i.image_id, i.file_name, i.server_file_name, i.source,
+		    i.reg_date image_reg_date, i.update_date image_update_date
+		from (
+			select * from (
+				select row_number() over(order by gallery_id) as seq,
+				gallery_id, title, password, country, owner, description, read_cnt, reg_date, update_date
+				from galleryb
+			)
+			where ${category} like #{keyword}
+		) g, gallery_imageB i
+		where g.gallery_id = i.gallery_id(+)		
+		order by gallery_id desc
+		
+	]]></select>
+
+</mapper>

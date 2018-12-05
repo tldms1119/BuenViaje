@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.common.dao.GalleryImageBDao">
+
+	<update id="updateByGalleryId" parameterType="Map"><![CDATA[
+		update gallery_imageB set
+			source = #{source}
+		where gallery_id = #{galleryId}
+	]]></update>
+	
+	
+	<delete id="delete" parameterType="long">
+		delete from gallery_imageB
+		where image_id=#{imageId}	
+	</delete>
+	
+	<delete id="deleteByGalleryId" parameterType="long">
+		DELETE FROM gallery_imageB
+		WHERE gallery_id=#{galleryId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.common.dao.GalleryDao">
+
+	<resultMap id="galleryImage" type="GalleryImage">
+		<id column="image_id" property="imageId" />
+		<result column="image_title" property="title" />
+		<result column="file_name" property="fileName" />
+		<result column="server_file_name" property="serverFileName" />
+		<result column="source" property="source" />
+		<result column="image_reg_date" property="regDate" />
+		<result column="image_update_date" property="updateDate" />
+	</resultMap>
+
+	<resultMap id="gallery" type="Gallery">
+		<id column="gallery_id" property="galleryId" />
+		<result column="title" property="title" />
+		<result column="owner" property="owner" />
+		<result column="description" property="description" />
+		<result column="view_count" property="viewCount" />
+		<result column="reg_date" property="regDate" />
+		<result column="update_date" property="updateDate" />
+		<collection property="list" resultMap="galleryImage" />
+	</resultMap>
+
+	<!-- 밑의 태그를 지칭하는 풀 ID는 namespace + id -->
+	<select id="count" resultType="int"><![CDATA[
+		select count(*) from gallery
+	]]></select>
+
+	<select id="getList" resultType="Gallery"><![CDATA[
+		select * from gallery
+	]]></select>
+
+	<select id="findById" parameterType="long" resultMap="gallery"><![CDATA[
+		select * from gallery_detail 
+		where gallery_id = #{galleryId}
+	]]></select>
+
+	<insert id="insert" parameterType="Gallery"
+		useGeneratedKeys="true" keyColumn="gallery_id" keyProperty="galleryId"><![CDATA[
+		insert into gallery (
+			gallery_id, title, owner, description
+		) values (
+			gallery_seq.nextval, #{title}, #{owner}, #{description}
+		)
+	]]></insert>
+
+	<insert id="addImage" parameterType="GalleryImage"><![CDATA[
+		insert into gallery_image (
+			image_id, title, file_name, server_file_name, source, gallery_id
+		) values (
+			gallery_image_seq.nextval, #{title}, #{fileName}, #{serverFileName},
+			#{source}, #{galleryId}
+		)
+	]]></insert>
+
+	<select id="getImages" parameterType="long"
+		resultType="GalleryImage"><![CDATA[
+		select * from gallery_image
+		where gallery_id = #{galleryId}
+	]]></select>
+	
+	<select id="getImage" parameterType="long"
+		resultType="GalleryImage"><![CDATA[
+		select * from gallery_image
+		where image_id = #{imageId}
+	]]></select>
+
+	<update id="update" parameterType="Gallery"><![CDATA[
+		update gallery set
+			title=#{title},
+			owner=#{owner},
+			description=#{description},
+			update_date=sysdate
+		where gallery_id=#{galleryId}
+	]]></update>
+	
+	<update id="updateCount" parameterType="long"><![CDATA[
+		update gallery set
+			view_count=view_count + 1
+		where gallery_id= #{galleryId}
+	]]></update>
+
+	<delete id="delete" parameterType="long"><![CDATA[
+		delete from gallery
+		where gallery_id = #{galleryId} 
+	]]></delete>
+
+	<!-- <select id="getPage" parameterType="map" resultType="Gallery"><![CDATA[
+		select * from (
+			select ROW_NUMBER() over (order by gallery_id) as seq,
+				gallery_id, title, owner, description, reg_date, update_date
+			from gallery
+		)
+		where seq between #{start} and #{end}
+	]]></select> -->
+	
+	<select id="getPage" parameterType="map" resultMap="gallery"><![CDATA[
+		select g.gallery_id, g.title, g.owner, g.description, 
+				g.view_count, g.reg_date, g.update_date,
+        		i.image_id, i.title image_title, i.file_name, 
+        		i.server_file_name, i.source,
+       			i.reg_date image_reg_date, i.update_date image_update_date
+		from (
+			select * from (
+			select ROW_NUMBER() over (order by gallery_id) as seq,
+				gallery_id, title, owner, description, view_count, reg_date, update_date
+			from gallery )
+			where seq between #{start} and #{end} ) g, gallery_image i
+		where g.gallery_id = i.gallery_id(+)
+		order by g.${orderBy} desc
+	]]></select>
+
+	<!-- <update id="updateByAdmin" parameterType="Member"><![CDATA[ update 
+		member set user_level=#{userLevel}, email=#{email}, phone_number=#{phoneNumber}, 
+		nick_name=#{nickName}, address=#{address}, update_date=sysdate where user_id=#{userId} 
+		]]></update> <update id="changePassword" parameterType="map"><![CDATA[ update 
+		member set password=#{newPassword} where user_id=#{userId} and password=#{oldPassword} 
+		]]></update> <select id="search" parameterType="Search" resultType="Member"><![CDATA[ 
+		select * from member where ${category} like #{keyword} order by reg_date 
+		desc ]]></select> -->
+</mapper>

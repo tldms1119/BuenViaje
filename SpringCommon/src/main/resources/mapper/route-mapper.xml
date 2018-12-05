@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.common.dao.RouteDao">
+	
+	<select id="count" resultType="int">
+		select count(*)
+		from route
+	</select>
+	
+	<!-- 목록용으로 content 컬럼은 제외 -->
+	<select id="getPage" parameterType="map" resultType="Route">
+		select route_id, title, writer, country, city, read_cnt, reg_date
+		from (
+			select ROW_NUMBER() over (order by reg_date desc) as seq,
+				route_id, title, writer, country, city, read_cnt, reg_date
+				from route
+		)
+		where seq between #{start} and #{end}
+		order by ${orderBy} desc
+	</select>
+	
+	<insert id="insert" parameterType="Route"
+		keyColumn="route_id" keyProperty="routeId">
+		insert into route (
+			route_id, title, writer, password, read_cnt, description, country,
+			city, reg_date, update_date
+		) values (
+			route_seq.NEXTVAL, #{title}, #{writer}, #{password}, 0, #{description},
+			#{country}, #{city}, sysdate, sysdate
+		)
+	</insert>
+	
+	<update id="increaseReadCnt" parameterType="long">
+		update route set
+			read_cnt = read_cnt + 1
+		where route_id=#{routeId}
+	</update>
+	
+	<select id="findById" parameterType="long" resultType="Route">
+		select * from route
+		where route_id=#{routeId}
+	</select>
+	
+	<update id="update" parameterType="Route">
+		update route set
+			title = #{ title },
+			description = #{ description },
+			country = #{ country },
+			city = #{ city },
+			update_date = sysdate
+		where route_id=#{routeId} and password=#{password}
+	</update>
+	
+	<delete id="delete" parameterType="long">
+		delete from route
+		where route_id=#{routeId}
+	</delete>
+	
+	<select id="search" parameterType="Search" resultType="Route">
+		select * 
+		from (select * from route
+			  where ${category} like #{keyword})
+		<if test="secondCategory != null and secondKeyword != null">
+			where ${secondCategory} like #{secondKeyword} 
+		</if>
+		order by route_id desc
+	</select>
+	
+</mapper>

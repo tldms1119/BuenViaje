@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<!-- 개발할 때는 false 운용할 때는 true -->
+		<setting name="cacheEnabled" value="false" />
+		<!-- database와 JAVA의 명명관례가 달라서 -->
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<!-- 자동으로 생성되는 (시퀀스 같은) 기본키 값에 대한 정보를 주겠다 -->
+		<setting name="useGeneratedKeys" value="true" />
+	</settings>
+
+</configuration>
+	

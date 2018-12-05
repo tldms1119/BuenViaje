@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.common.dao.TourSpotDao">
+	
+	<insert id="insert" parameterType="TourSpot">
+		insert into tourspot(
+			tourspot_id, route_id, title, brief
+		) values (
+			tourspot_seq.NEXTVAL, #{routeId}, #{title}, #{brief}
+		)
+	</insert>
+	
+	<select id="getList" parameterType="long" resultType="TourSpot">
+		select * from tourspot
+		where route_id=#{routeId}
+	</select>
+	
+	<select id="findById" parameterType="long" resultType="TourSpot">
+		select * from tourspot
+		where tourspot_id=#{tourspotId}
+	</select>
+	
+	<delete id="delete" parameterType="long">
+		delete from tourspot
+		where tourspot_id=#{tourspotId}
+	</delete>
+	
+	<delete id="deleteByRouteId" parameterType="long">
+		delete from tourspot
+		where route_id=#{routeId}
+	</delete>
+
+	
+</mapper>

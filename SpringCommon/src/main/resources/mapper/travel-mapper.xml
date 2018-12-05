@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.common.dao.TravelDao">
+	
+	<select id="count" resultType="int">
+		select count(*)
+		from travel
+	</select>
+	
+	<!-- 목록용으로 content 컬럼은 제외 -->
+	<select id="getPage" parameterType="map" resultType="Travel">
+		select travel_id, title, writer, country, read_cnt, reg_date
+		from (
+			select ROW_NUMBER() over (order by reg_date desc) as seq,
+				travel_id, title, writer, country, read_cnt, reg_date
+				from travel
+		)
+		where seq between #{start} and #{end}
+		order by ${orderBy} desc
+	</select>
+	
+	<insert id="insert" parameterType="Travel"
+		keyColumn="travel_id" keyProperty="travelId">
+		insert into travel (
+			travel_id, title, writer, password, read_cnt, content, country,
+			reg_date, update_date
+		) values (
+			travel_seq.NEXTVAL, #{title}, #{writer}, #{password}, 0, #{content},
+			#{country}, sysdate, sysdate
+		)
+	</insert>
+	
+	<update id="increaseReadCnt" parameterType="long">
+		update travel set
+			read_cnt = read_cnt + 1
+		where travel_id=#{travelId}
+	</update>
+	
+	<select id="findById" parameterType="long" resultType="Travel">
+		select * from travel
+		where travel_id=#{travelId}
+	</select>
+	
+	<update id="update" parameterType="Travel">
+		update travel set
+			title = #{ title },
+			content = #{ content },
+			country = #{ country },
+			update_date = sysdate
+		where travel_id=#{travelId} and password=#{password}
+	</update>
+	
+	<delete id="delete" parameterType="long">
+		delete from travel
+		where travel_id=#{travelId}
+	</delete>
+	
+	<!-- <select id="search" parameterType="Search" resultType="Travel"><![CDATA[
+		select * from travel
+		where ${category} like #{keyword}
+		order by travel_id desc
+	]]></select> -->
+	
+	<select id="search" parameterType="Search" resultType="Travel">
+		select * 
+		from (select * from travel
+			  where ${category} like #{keyword})
+		<if test="secondCategory != null and secondKeyword != null">
+			where ${secondCategory} like #{secondKeyword} 
+		</if>
+		order by travel_id desc
+	</select>
+	
+</mapper>
